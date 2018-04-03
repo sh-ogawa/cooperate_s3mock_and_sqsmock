@@ -23,7 +23,21 @@ def send_message(method, bucket_name, path)
   return if event.nil?
 
   queue_url = sprintf("http://sqs_mock:9324/queue/%s", QUEUE_NAME)
-  message = sprintf('{"Message": "{\"Records\":[{\"eventName\":\"%s\",\"s3\":{\"object\":{\"key\":\"%s\"},\"bucket\":{\"name\":\"%s\"}}}]}"}', event, path, bucket_name)
+  message = sprintf('{
+  "Records": [
+    {
+      "eventName": "%s",
+      "s3": {
+        "object": {
+          "key": "%s"
+        },
+        "bucket": {
+          "name": "%s"
+        }
+      }
+    }
+  ]
+}', event, path, bucket_name)
 
   sqs = Aws::SQS::Client.new(AWS_CONFIG)
   sqs.send_message(queue_url: queue_url, message_body: message)
